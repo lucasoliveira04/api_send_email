@@ -4,6 +4,7 @@ import com.api_send_email.apisendemail.Request.EmailRequest;
 import com.api_send_email.apisendemail.Services.SendEmail;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins= "*", allowedHeaders= "*")
 @RestController
 @RequestMapping("/api/send/email")
 public class SendEmailApiController {
