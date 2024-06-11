@@ -1,6 +1,7 @@
 package com.api_send_email.apisendemail.Controller;
 
 import com.api_send_email.apisendemail.Request.EmailRequest;
+import com.api_send_email.apisendemail.Request.EmailSendRequest;
 import com.api_send_email.apisendemail.Services.SendEmail;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +16,10 @@ public class SendEmailApiController {
     }
 
     @PostMapping("/send")
-    public String sendEmail(@RequestBody EmailRequest emailRequest) {
-        sendEmail.send(emailRequest.getMessage(), emailRequest.getContacts());
-        return "Email sent successfully";
+    public String sendEmail(@RequestBody EmailSendRequest emailSendRequest) {
+        sendEmail.send(emailSendRequest.getConfigurationMail(),
+                emailSendRequest.getEmailRequest().getMessage(),
+                emailSendRequest.getEmailRequest().getContacts());
+        return "Email Sucessfully Sent";
     }
 }

@@ -1,44 +1,54 @@
 package com.api_send_email.apisendemail.Services;
 
+import com.api_send_email.apisendemail.Request.ConfigurationMail;
 import jakarta.mail.internet.MimeMessage;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.util.Properties;
+
 @Service
 public class SendEmail {
-    private final JavaMailSender javaMailSender;
+    private final JavaMailSender defaultMailSender;
 
-    @Value("${support.mail}")
-    private String supportMail;
-
-    public SendEmail(JavaMailSender javaMailSender) {
-        this.javaMailSender = javaMailSender;
+    public SendEmail(JavaMailSender defaultMailSender) {
+        this.defaultMailSender = defaultMailSender;
     }
 
-    public void send(String message, String contact) {
-        try{
-            MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+    private JavaMailSender createMailSender(ConfigurationMail config) {
+        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+        mailSender.setHost(config.getHost());
+        mailSender.setPort(Integer.parseInt(config.getPort()));
+        mailSender.setUsername(config.getUsername());
+        mailSender.setPassword(config.getPassword());
+
+        Properties props = mailSender.getJavaMailProperties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.required", "true");
+
+        return mailSender;
+    }
+
+    public void send(ConfigurationMail config, String message, String contact) {
+        try {
+            JavaMailSender mailSender = createMailSender(config);
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            messageHelper.setFrom(supportMail);
-            messageHelper.setTo(supportMail);
+            messageHelper.setFrom(config.getSupportMail());
+            messageHelper.setTo(config.getSupportMail());
             messageHelper.setSubject("Blog | Feedback");
             messageHelper.setText(getMessage(message, contact), true);
-            javaMailSender.send(mimeMessage);
-        } catch (Exception e){
+            mailSender.send(mimeMessage);
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private String getMessage(String message, String contact) {
-        String contactInfo;
-        if (contact != null && !contact.isEmpty()) {
-            contactInfo = contact;
-        } else {
-            contactInfo = "MENSAGEM ANÔNIMA";
-        }
+        String contactInfo = (contact != null && !contact.isEmpty()) ? contact : "MENSAGEM ANÔNIMA";
 
         return "<!DOCTYPE html>" +
                 "<html lang='pt-BR'>" +
@@ -52,12 +62,6 @@ public class SendEmail {
                 ".content { padding: 20px; }" +
                 ".footer { text-align: center; padding: 10px; font-size: 12px; color: #888888; }" +
                 "</style>" +
-                "<script>" +
-                "function displayContact() {" +
-                "   document.getElementById('contact-info').innerText = '" + contactInfo + "';" +
-                "}" +
-                "window.onload = displayContact;" +
-                "</script>" +
                 "</head>" +
                 "<body>" +
                 "<div class='email-container'>" +
@@ -65,7 +69,7 @@ public class SendEmail {
                 "<h1>Feedback do Portfolio</h1>" +
                 "</div>" +
                 "<div class='content'>" +
-                "<p>Contato: <span id='contact-info'>"+ contactInfo +"</span></p>" +
+                "<p>Contato: " + contactInfo + "</p>" +
                 "<p>Mensagem:</p>" +
                 "<p>" + message + "</p>" +
                 "</div>" +
@@ -76,8 +80,4 @@ public class SendEmail {
                 "</body>" +
                 "</html>";
     }
-
-
-
 }
-
