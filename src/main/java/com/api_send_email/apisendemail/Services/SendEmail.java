@@ -11,18 +11,20 @@ import java.util.Properties;
 
 @Service
 public class SendEmail {
-    private final JavaMailSender defaultMailSender;
+    private final JavaMailSender mailSender;
+    private final ConfigurationMail configurationMail;
 
-    public SendEmail(JavaMailSender defaultMailSender) {
-        this.defaultMailSender = defaultMailSender;
+    public SendEmail(JavaMailSender mailSender, ConfigurationMail configurationMail) {
+        this.mailSender = mailSender;
+        this.configurationMail = configurationMail;
     }
 
-    private JavaMailSender createMailSender(ConfigurationMail config) {
+    private JavaMailSender createMailSender() {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(config.getHost());
-        mailSender.setPort(Integer.parseInt(config.getPort()));
-        mailSender.setUsername(config.getUsername());
-        mailSender.setPassword(config.getPassword());
+        mailSender.setHost(configurationMail.getHost());
+        mailSender.setPort(Integer.parseInt(configurationMail.getPort()));
+        mailSender.setUsername(configurationMail.getUsername());
+        mailSender.setPassword(configurationMail.getPassword());
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", "true");
@@ -32,13 +34,13 @@ public class SendEmail {
         return mailSender;
     }
 
-    public void send(ConfigurationMail config, String message, String contact, String subject, String title, String nameProjectOrNameBusiness) {
+    public void send(String message, String contact, String subject, String title, String nameProjectOrNameBusiness) {
         try {
-            JavaMailSender mailSender = createMailSender(config);
+            JavaMailSender mailSender = createMailSender();
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-            messageHelper.setFrom(config.getSupportMail());
-            messageHelper.setTo(config.getSupportMail());
+            messageHelper.setFrom(configurationMail.getSupportMail());
+            messageHelper.setTo(configurationMail.getSupportMail());
             messageHelper.setSubject(subject);
             messageHelper.setText(getMessage(message, contact, title, nameProjectOrNameBusiness), true);
             mailSender.send(mimeMessage);
