@@ -19,7 +19,10 @@ public class SendEmailApiController {
     public String sendEmail(@RequestBody EmailSendRequest emailSendRequest) {
         sendEmail.send(emailSendRequest.getConfigurationMail(),
                 emailSendRequest.getEmailRequest().getMessage(),
-                emailSendRequest.getEmailRequest().getContacts());
+                emailSendRequest.getEmailRequest().getContacts(),
+                emailSendRequest.getEmailRequest().getSubject(),
+                emailSendRequest.getEmailRequest().getTitle(),
+                emailSendRequest.getEmailRequest().getNameProjectOrNameBusiness());
         return "Email Sucessfully Sent";
     }
 }

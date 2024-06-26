@@ -7,6 +7,9 @@ import lombok.Setter;
 @Getter @Setter
 @AllArgsConstructor
 public class EmailRequest {
+    private String title;
     private String message;
     private String contacts;
+    private String subject;
+    private String nameProjectOrNameBusiness;
 }

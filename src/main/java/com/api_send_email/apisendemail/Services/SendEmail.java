@@ -32,22 +32,22 @@ public class SendEmail {
         return mailSender;
     }
 
-    public void send(ConfigurationMail config, String message, String contact) {
+    public void send(ConfigurationMail config, String message, String contact, String subject, String title, String nameProjectOrNameBusiness) {
         try {
             JavaMailSender mailSender = createMailSender(config);
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             messageHelper.setFrom(config.getSupportMail());
             messageHelper.setTo(config.getSupportMail());
-            messageHelper.setSubject("Blog | Feedback");
-            messageHelper.setText(getMessage(message, contact), true);
+            messageHelper.setSubject(subject);
+            messageHelper.setText(getMessage(message, contact, title, nameProjectOrNameBusiness), true);
             mailSender.send(mimeMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private String getMessage(String message, String contact) {
+    private String getMessage(String message, String contact, String title, String nameProjectOrNameBusiness) {
         String contactInfo = (contact != null && !contact.isEmpty()) ? contact : "MENSAGEM ANÔNIMA";
 
         return "<!DOCTYPE html>" +
@@ -66,7 +66,7 @@ public class SendEmail {
                 "<body>" +
                 "<div class='email-container'>" +
                 "<div class='header'>" +
-                "<h1>Feedback do Portfolio</h1>" +
+                "<h1>" + title + "</h1>" +
                 "</div>" +
                 "<div class='content'>" +
                 "<p>Contato: " + contactInfo + "</p>" +
@@ -74,7 +74,7 @@ public class SendEmail {
                 "<p>" + message + "</p>" +
                 "</div>" +
                 "<div class='footer'>" +
-                "<p>&copy; " + java.time.LocalDate.now().getYear() + " Portfolio. Todos os direitos reservados.</p>" +
+                "<p>&copy; " + java.time.LocalDate.now().getYear() + " " +nameProjectOrNameBusiness + " . Todos os direitos reservados.</p>" +
                 "</div>" +
                 "</div>" +
                 "</body>" +
