@@ -25,4 +25,5 @@ public class SendEmailApiController {
         );
         return "Email successfully sent";
     }
+
 }

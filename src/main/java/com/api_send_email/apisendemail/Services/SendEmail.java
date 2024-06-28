@@ -50,7 +50,10 @@ public class SendEmail {
     }
 
     private String getMessage(String message, String contact, String title, String nameProjectOrNameBusiness) {
-        String contactInfo = (contact != null && !contact.isEmpty()) ? contact : "MENSAGEM ANÔNIMA";
+        String contactSection = "";
+        if (contact != null && !contact.isEmpty()) {
+            contactSection = "<p>Contato: " + contact + "</p>";
+        }
 
         return "<!DOCTYPE html>" +
                 "<html lang='pt-BR'>" +
@@ -71,12 +74,12 @@ public class SendEmail {
                 "<h1>" + title + "</h1>" +
                 "</div>" +
                 "<div class='content'>" +
-                "<p>Contato: " + contactInfo + "</p>" +
+                contactSection +
                 "<p>Mensagem:</p>" +
                 "<p>" + message + "</p>" +
                 "</div>" +
                 "<div class='footer'>" +
-                "<p>&copy; " + java.time.LocalDate.now().getYear() + " " +nameProjectOrNameBusiness + " . Todos os direitos reservados.</p>" +
+                "<p>&copy; " + java.time.LocalDate.now().getYear() + " " + nameProjectOrNameBusiness + ". Todos os direitos reservados.</p>" +
                 "</div>" +
                 "</div>" +
                 "</body>" +
