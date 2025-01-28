@@ -1,6 +1,8 @@
 package com.api_send_email.apisendemail.Services;
 
 import com.api_send_email.apisendemail.Request.ConfigurationMail;
+import com.api_send_email.apisendemail.enums.TypeMessage;
+import com.api_send_email.apisendemail.utils.EmailTemplateGenerator;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -34,15 +36,21 @@ public class SendEmail {
         return mailSender;
     }
 
-    public void send(String message, String contact, String subject, String title, String nameProjectOrNameBusiness) {
+    public void send(String message, String contact, String subject, String title, String nameProjectOrNameBusiness, TypeMessage typeMessage) {
         try {
             JavaMailSender mailSender = createMailSender();
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
             messageHelper.setFrom(configurationMail.getSupportMail());
-            messageHelper.setTo(configurationMail.getSupportMail());
+            messageHelper.setTo(contact);
             messageHelper.setSubject(subject);
-            messageHelper.setText(getMessage(message, contact, title, nameProjectOrNameBusiness), true);
+            messageHelper.setText(EmailTemplateGenerator.generateEmailTemplate(
+                    typeMessage,
+                    message,
+                    title,
+                    contact,
+                    nameProjectOrNameBusiness
+            ), true);
             mailSender.send(mimeMessage);
         } catch (Exception e) {
             e.printStackTrace();

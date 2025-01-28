@@ -21,8 +21,11 @@ public class SendEmailApiController {
                 emailSendRequest.getEmailRequest().getContacts(),
                 emailSendRequest.getEmailRequest().getSubject(),
                 emailSendRequest.getEmailRequest().getTitle(),
-                emailSendRequest.getEmailRequest().getNameProjectOrNameBusiness()
+                emailSendRequest.getEmailRequest().getNameProjectOrNameBusiness(),
+                emailSendRequest.getTypeMessage()
         );
+
+
         return "Email successfully sent";
     }
 
